@@ -1,0 +1,6 @@
+Before starting, one needs to go into main.c and change the FILENAME in line 5 to wherever one wants the primelist saved.
+The file will be hidden, when the filename starts with a dot.
+
+DO NOT CHANGE THE FILE upon creation. 
+
+compile with "gcc main.c -o a -lm" after editing source code
