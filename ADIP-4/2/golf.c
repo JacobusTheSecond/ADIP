@@ -1,0 +1,1 @@
+c,d;x(a,b){return b>0?x(++a,--b):b<0?x(--a,++b):a;}y(a,b){return b>0?y(--a,--b):b<0?y(++a,++b):a;}m(a,b){return b>0?x(m(a,--b),a):b<0?y(m(a,++b),a):0;}int main(){printf("a eingeben:\n");scanf("%d",&c);printf("b eingeben:\n");scanf("%d",&d);printf("%d + %d = %d\n%d - %d = %d\n%d * %d = %d\n",c,d,x(c,d),c,d,y(c,d),c,d,m(c,d));}
