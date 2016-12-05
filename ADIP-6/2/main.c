@@ -5,6 +5,7 @@ typedef struct student{
 	unsigned int MtrkNr;
 	char* firstname;
 	char* secondname;
+	double note;
 }student;
 
 typedef struct node{
@@ -15,7 +16,7 @@ typedef struct node{
 typedef enum{false,true} bool;
 
 void printStudent(student* S){
-	printf("-----------------\nVorname:     %s\nNachname:    %s\nMatrikelNr.: %d\n",S->firstname,S->secondname,S->MtrkNr);
+	printf("-----------------\nVorname:     %s\nNachname:    %s\nMatrikelNr.: %d\nNote:        %.1g\n",S->firstname,S->secondname,S->MtrkNr,S->note);
 }
 
 void removedata(student* S){
@@ -97,7 +98,7 @@ void printStudents(node* head){
 }
 
 student* readStudent(node* head){
-	student* newStudent = malloc(sizeof(student));
+	student* newStudent = calloc(1,sizeof(student));
 	printf("New Student\nEnter firstname:\n");
 	char* v = malloc(256);
 	char* n = malloc(256);
@@ -106,9 +107,47 @@ student* readStudent(node* head){
 	scanf("%s",n);
 	printf("Enter Matrikel number:\n");
 	scanf("%i",&newStudent->MtrkNr);
+	newStudent->note = 6.0;
+	while(!(1.0<=newStudent->note&&newStudent->note<=5.0)){
+		printf("Enter grade:\n");
+		scanf("%lf",&newStudent->note);
+	}
 	newStudent->firstname=v;
 	newStudent->secondname=n;
 	return newStudent;
+}
+
+void printBest(node* head){
+	node* iterator = head;
+	double bestgrade = 6.0;
+	while(iterator->next != (void*)0){
+		if(((student*)(iterator->next->data))->note < bestgrade){
+			bestgrade = ((student*)(iterator->next->data))->note;
+		}
+		iterator = iterator->next;
+	}
+	iterator = head;
+	while(iterator->next != (void*)0){
+		if(((student*)(iterator->next->data))->note == bestgrade)
+			printStudent(((student*)(iterator->next->data)));
+		iterator = iterator->next;
+	}
+}
+
+void printAverage(node* head){
+	node* iterator = head;
+	double total = 0;
+	int amount = 0;
+	while(iterator->next != (void*)0){
+		++amount;
+		total+=((student*)(iterator->next->data))->note;
+		iterator = iterator->next;
+	}
+	if(amount != 0)
+		printf("Average is: %.2g\n-----\n",total/amount);
+	else{
+		printf("no Students in Database\n");
+	}	
 }
 
 int main(){
@@ -118,7 +157,7 @@ int main(){
 	char input;
 	student* S;
 	while(again){
-		printf("-----\n[a]dd student\n[g]et surname by Matrikel number\n[p]rint student\n[P]rint all students\n[r]emove student\n[R]emove all data\n[e]xit\n-----\n");
+		printf("-----\n[a]dd student\n[g]et surname by Matrikel number\n[p]rint student\n[b]beste printen\n[A]verage ausgeben\n[P]rint all students\n[r]emove student\n[R]emove all data\n[e]xit\n-----\n");
 		scanf("%c",&input);
 		switch(input){
 			case 'a':
@@ -171,6 +210,14 @@ int main(){
 				}else{
 					printf("There is no student with this Matrikel number!\n");
 				}
+				getchar();
+				break;
+			case 'b':
+				printBest(head);
+				getchar();
+				break;
+			case 'A':
+				printAverage(head);
 				getchar();
 				break;
 			default: 

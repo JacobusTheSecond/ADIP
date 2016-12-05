@@ -6,7 +6,7 @@ long long fak(long long n){
 	}else if(n == 1||n==0){
 		return 1;
 	}else if(n<0){
-		return 0;
+		return 1;
 	}
 }
 
@@ -22,7 +22,7 @@ long long Lotto(long long n, long long k){
 
 int main(){
 	long long n,k;
-	printf("n eingeben\n");
+	printf("n eingeben. n>20 ist uncool\n");
 	scanf("%lli",&n);
 	printf("k eingeben\n");
 	scanf("%lli",&k);

@@ -14,13 +14,13 @@ char encryptChar(char c, int n){
 
 int encrypt(char* a, int n){
 	for(int i=0;a[i];++i){
-		a[i]=encryptChar(a[i],n);
+		a[i]=encryptChar(a[i],n%26);
 	}
 	return EXIT_SUCCESS;
 }
 
 int decrypt(char* a, int n){
-	encrypt(a,26-n);
+	encrypt(a,26-(n%26));
 	return EXIT_SUCCESS;
 }
 
@@ -29,6 +29,8 @@ int main(){
 	int n;
 	scanf("%s %d",s,&n);
 	encrypt(s,n);
-	printf("%s\n",s);
+	printf("encrypted %s\n",s);
+	decrypt(s,n);
+	printf("decrypted %s\n",s);
 
 }
