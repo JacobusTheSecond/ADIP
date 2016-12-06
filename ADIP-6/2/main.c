@@ -16,7 +16,7 @@ typedef struct node{
 typedef enum{false,true} bool;
 
 void printStudent(student* S){
-	printf("-----------------\nVorname:     %s\nNachname:    %s\nMatrikelNr.: %d\nNote:        %.1g\n",S->firstname,S->secondname,S->MtrkNr,S->note);
+	printf("-----------------\nVorname:     %s\nNachname:    %s\nMatrikelNr.: %d\nNote:        %.3g\n",S->firstname,S->secondname,S->MtrkNr,S->note);
 }
 
 void removedata(student* S){
@@ -150,6 +150,108 @@ void printAverage(node* head){
 	}	
 }
 
+bool hasABetterGrade(void* a, void* b){
+	if(((student*)a)->note < ((student*)b)->note){
+		return true;
+	}else{
+		return false;
+	}
+}
+node* sortRec(node* start, node* end,bool(*compare)(void*,void*)){
+	node* iterator = start;
+
+	//if There are 1 or 2 items to sort, return accordingly
+	if(end == start){
+		return start;
+	}else if (start->next == end){
+		if(compare(end->data,start->data)){
+			node* swap = end->next;
+			end->next = start;
+			start->next = swap;
+			return end;
+		}else{
+			return start;
+		}
+	}
+
+
+	//calculate length
+	int length = 0;
+	while(iterator->next != end){
+		++length;
+		iterator = iterator->next;
+	}
+	node* mergeStartLower = start;
+	node* mergeEndUpper = end->next;
+	
+	//find midpoint
+	length /= 2;
+	node* mergeEndLower = start;
+	for(int k=0;k<length;++k){
+		 mergeEndLower = mergeEndLower->next;
+	}
+
+	node* mergeStartUpper = sortRec(mergeEndLower->next,end,compare);
+	mergeEndLower->next = mergeStartUpper;
+	mergeStartLower = sortRec(start,mergeEndLower,compare);
+	
+	//finding new mergeEndLower after it has been sorted
+	mergeEndLower = mergeStartLower;
+	while(mergeEndLower->next != mergeStartUpper){
+		mergeEndLower = mergeEndLower->next;
+	}
+	
+	//merging
+	node* lowerIterator = mergeStartLower;
+	node* upperIterator = mergeStartUpper;
+	node* firstElement;
+	node* startIterator;
+
+	//merging - setting the first element
+	if(compare(lowerIterator->data,upperIterator->data)){
+		firstElement = lowerIterator;
+		startIterator = lowerIterator;
+		lowerIterator = lowerIterator->next;
+	}else{
+		firstElement = upperIterator;
+		startIterator = upperIterator;
+		upperIterator = upperIterator->next;
+	}
+
+	//merging - concatenating the rest to the first element, until one part is empty
+	while(lowerIterator != mergeStartUpper && upperIterator != mergeEndUpper){
+		if(compare(lowerIterator->data,upperIterator->data)){
+			startIterator->next = lowerIterator;
+			lowerIterator = lowerIterator->next;
+			startIterator = startIterator->next;
+		}else{
+			startIterator->next = upperIterator;
+			upperIterator = upperIterator->next;
+			startIterator = startIterator->next;
+		}
+	}
+
+	//merging - adding the rest
+	if(lowerIterator != mergeStartUpper){
+		startIterator->next = lowerIterator;
+		mergeEndLower->next = mergeEndUpper;
+	}else if(upperIterator != mergeEndUpper){
+		startIterator->next = upperIterator;
+	}else{
+		startIterator->next = mergeEndUpper;
+	}
+
+	//return the first element, as it is the pointer to the rest of the list
+	return firstElement;
+}
+void sort(node** head){
+	node* iterator = *head;
+	while(iterator->next != (void*)0){
+		iterator = iterator->next;
+	}
+	(*head)->next = sortRec((*(head))->next,iterator,&hasABetterGrade);
+}
+
 int main(){
 	node* head = calloc(sizeof(node),1);
 	bool again = true;
@@ -157,9 +259,14 @@ int main(){
 	char input;
 	student* S;
 	while(again){
-		printf("-----\n[a]dd student\n[g]et surname by Matrikel number\n[p]rint student\n[b]beste printen\n[A]verage ausgeben\n[P]rint all students\n[r]emove student\n[R]emove all data\n[e]xit\n-----\n");
+		printf("-----\n[a]dd student\n[g]et surname by Matrikel number\n[p]rint student\n[b]beste printen\n[A]verage ausgeben\n[P]rint all students\n[s]ort Students by Grade\n[r]emove student\n[R]emove all data\n[e]xit\n-----\n");
 		scanf("%c",&input);
 		switch(input){
+			case 's':
+				sort(&head);
+				printStudents(head);
+				getchar();
+				break;
 			case 'a':
 				S = readStudent(head);
 				if(addStudent(head,S)){
